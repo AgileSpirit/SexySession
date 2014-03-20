@@ -1,73 +1,93 @@
 package io.jrocket.infra.util;
 
 import com.google.common.collect.Lists;
-import io.jrocket.domain.Bookmark;
-import io.jrocket.infra.repository.BookmarkRepository;
-import org.joda.time.DateTime;
+import io.jrocket.domain.entities.Session;
+import io.jrocket.domain.entities.User;
+import io.jrocket.infra.repository.SessionRepository;
+import io.jrocket.infra.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Named
 public class DataGenerator {
 
     @Inject
-    private BookmarkRepository bookmarkRepository;
+    UserRepository userRepository;
+
+    @Inject
+    SessionRepository sessionRepository;
 
     private static Logger logger = LoggerFactory.getLogger(DataGenerator.class);
 
+    /**
+     * Generate and persist some users and simulated sessions.
+     */
     public void populateData() {
-        List<Bookmark> bookmarks = Lists.newArrayList();
+        generateUsers();
+        generateSessions();
 
-        bookmarks.add(newBookmark("http://agile-spirit.fr", "Agile Spirit", "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "));
-        bookmarks.add(newBookmark("http://octo.com", "OCTO Technology", "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."));
-        bookmarks.add(newBookmark("http://google.com", "Google Search Engine", "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."));
-        bookmarks.add(newBookmark("http://amazon.com", "Amazon e-commerce", "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
-        bookmarks.add(newBookmark("http://facebook.com", "Facebook - Social network", "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."));
-        bookmarks.add(newBookmark("http://twitter.com", "Twitter - Social microblogging platform", "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."));
-        bookmarks.add(newBookmark("http://linkedin.com", "LinkedIn", "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem."));
-        bookmarks.add(newBookmark("http://ebay.com", "Ebay", "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga."));
-
-        bookmarkRepository.save(bookmarks);
     }
 
-    private Bookmark newBookmark(String url, String title, String description) {
-        Bookmark bookmark = Bookmark.create(url, title, description);
-        bookmark.setCreationDate(new DateTime());
-        return bookmark;
-    }
+    private final static int MAX_USERS = 10000;
 
-    public void retrieveAndDisplayAllData() {
-        displayData(bookmarkRepository.findAll());
-    }
+    /**
+     * Generate and persist some users.
+     */
+    private void generateUsers() {
+        logger.info("Generating users ...");
+        List<User> users = Lists.newArrayList();
 
-    public void retrieveAndDisplaySortedData() {
-        displayData(bookmarkRepository.findLastBookmarksOrderByCreationDateDesc(3));
-    }
+        users.add(newUser("admin", "admin"));
+        users.add(newUser("test", "test"));
 
-    private void displayData(Iterable<Bookmark> items) {
-        List<Bookmark> bookmarks = Lists.newArrayList(items);
-        if (bookmarks.isEmpty()) {
-            logger.info("There is no data");
-        } else {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\r\n\"bookmarks\" : {\r\n");
-            for (Bookmark bookmark : bookmarks) {
-                sb.append("  {\r\n");
-                sb.append("    \"id\" : \"" + bookmark.getId() + "\",\r\n");
-                sb.append("    \"url\" : \"" + bookmark.getUrl() + "\",\r\n");
-                sb.append("    \"title\" : \"" + bookmark.getTitle() + "\",\r\n");
-                sb.append("    \"description\" : \"" + bookmark.getDescription() + "\",\r\n");
-                sb.append("    \"creationDate\" : \"" + bookmark.getCreationDate() + "\",\r\n");
-                sb.append("    \"modificationDate\" : \"" + bookmark.getModificationDate() + "\"\r\n");
-                sb.append("  }\r\n");
-            }
-            sb.append("}");
-            logger.info(sb.toString());
+        // Add MAX_USERS (login = "userX", password = "toto")
+        for (int i = 0 ; i < MAX_USERS ; i++) {
+            users.add(newUser("user" + i, "toto"));
         }
+        userRepository.save(users);
+
+        long count = userRepository.count();
+        logger.info("There is " + count + " users in the DB");
+    }
+
+    private final static int MAX_SESSIONS = 0;
+
+    /**
+     * Generate and persist MAX_SESSIONS sessions.
+     */
+    private void generateSessions() {
+        logger.info("Generating sessions ...");
+        List<Session> sessions = new ArrayList<>(MAX_SESSIONS);
+        Random random = new Random();
+        for (int i = 0; i < MAX_SESSIONS; i++) {
+            String token = Session.generateToken();
+            Session session = Session.newSession(token, random.nextLong());
+            sessions.add(session);
+        }
+        sessionRepository.save(sessions);
+
+        long count = sessionRepository.count();
+        logger.info("There is " + count + " sessions in the DB");
+    }
+
+    /**
+     * Generate a user
+     *
+     * @param login
+     * @param password
+     * @return
+     */
+    private User newUser(String login, String password) {
+        User user = new User();
+        user.setLogin(login);
+        user.setPassword(password);
+        return user;
     }
 
 }

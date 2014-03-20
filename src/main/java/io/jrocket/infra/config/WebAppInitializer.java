@@ -1,17 +1,19 @@
 package io.jrocket.infra.config;
 
-import com.codahale.metrics.servlets.AdminServlet;
-import io.jrocket.infra.monitoring.metrics.HealthCheckServletContextListener;
-import io.jrocket.infra.monitoring.metrics.MetricsServletContextListener;
+import io.jrocket.infra.util.NoSessionRequestFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
+import javax.servlet.SessionTrackingMode;
+import java.util.HashSet;
+import java.util.Set;
 
 public class WebAppInitializer implements WebApplicationInitializer {
 
@@ -20,43 +22,27 @@ public class WebAppInitializer implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext container) {
         addSpringWebSupport(container);
-        addMetricsSupport(container);
     }
 
     private void addSpringWebSupport(ServletContext container) {
         // Create the dispatcher servlet's Spring application context
-        AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
-        dispatcherContext.register(ApplicationConfig.class);
-        dispatcherContext.getEnvironment().setDefaultProfiles("localhost");
+        AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
+        rootContext.register(ApplicationConfig.class);
+
+        // Manage the lifecycle of the root application context
+        container.addListener(new ContextLoaderListener(rootContext));
 
         // Register and map the dispatcher servlet
-        LOGGER.info("Add servlet : DispatcherServlet");
-        ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
-        servlet.setLoadOnStartup(getServletIndex());
-        servlet.addMapping("/*");
-        
-        /*
-         * This listener is required for ServletListener to be aware of Spring context (ex: Metrics servlets)
-         */
-        container.addListener(new ContextLoaderListener(dispatcherContext));
+        ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(rootContext));
+        servlet.setLoadOnStartup(1);
+        servlet.addMapping("/");
+
+        // Add filter
+//        container.addFilter("springSecurityFilterChain", new NoSessionRequestFilter()).addMappingForUrlPatterns(null, false, "/*");
+
+        container.setSessionTrackingModes(new HashSet<SessionTrackingMode>());
+
     }
 
-    private void addMetricsSupport(ServletContext container) {
-        // Register Metrics AdminServlet
-        ServletRegistration.Dynamic servlet = container.addServlet("metrics", new AdminServlet());
-        servlet.setLoadOnStartup(getServletIndex());
-        servlet.addMapping("/monitoring/metrics/*");
 
-        /*
-         * These listeners are required by AdminServlet, that looks in their two ContextAttributes (MetricRegistry and HealthCheckRegistry)
-         */
-        container.addListener(MetricsServletContextListener.class);
-        container.addListener(HealthCheckServletContextListener.class);
-    }
-
-    private static int servletIndex = 0;
-
-    private final static int getServletIndex() {
-        return ++servletIndex;
-    }
 }
