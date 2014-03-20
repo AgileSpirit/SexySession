@@ -40,8 +40,6 @@ public class WebAppInitializer implements WebApplicationInitializer {
         // Add filter
 //        container.addFilter("springSecurityFilterChain", new NoSessionRequestFilter()).addMappingForUrlPatterns(null, false, "/*");
 
-        container.setSessionTrackingModes(new HashSet<SessionTrackingMode>());
-
     }
 
 
