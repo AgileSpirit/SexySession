@@ -52,19 +52,21 @@ public class LoginController {
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String signOut(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("SMART_SESSION_ID")) {
-                String sessionToken = cookie.getValue();
-                try {
-                    userService.signOut(sessionToken);
-                    Cookie eraser = new Cookie("SMART_SESSION_ID", null);
-                    eraser.setMaxAge(0);
-                    response.addCookie(eraser);
-                } catch (ApplicationException e) {
-                    LOGGER.error(e.getMessage());
-                    return "redirect:/error";
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("SMART_SESSION_ID")) {
+                    String sessionToken = cookie.getValue();
+                    try {
+                        userService.signOut(sessionToken);
+                        Cookie eraser = new Cookie("SMART_SESSION_ID", null);
+                        eraser.setMaxAge(0);
+                        response.addCookie(eraser);
+                    } catch (ApplicationException e) {
+                        LOGGER.error(e.getMessage());
+                        return "redirect:/error";
+                    }
+                    return "redirect:/login";
                 }
-                return "redirect:/login";
             }
         }
         return "redirect:/error";

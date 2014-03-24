@@ -1,5 +1,6 @@
 package io.jrocket.infra.config;
 
+import io.jrocket.infra.util.Features;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -67,6 +68,17 @@ public class ApplicationConfig {
         setProperty(env, properties, "hibernate.archive.autodetection");
         setProperty(env, properties, "hibernate.use_sql_comments");
         setProperty(env, properties, "hibernate.format_sql");
+
+        // C3P0 connection pooling
+        if (Features.IS_ENABLED_HIBERNATE_C3P0_POOLING) {
+            setProperty(env, properties, "hibernate.connection.provider_class");
+            setProperty(env, properties, "hibernate.c3p0.min_size");
+            setProperty(env, properties, "hibernate.c3p0.max_size");
+            setProperty(env, properties, "hibernate.c3p0.acquire_increment");
+            setProperty(env, properties, "hibernate.c3p0.idle_test_period");
+            setProperty(env, properties, "hibernate.c3p0.max_statements");
+            setProperty(env, properties, "hibernate.c3p0.timeout");
+        }
 
         return properties;
     }

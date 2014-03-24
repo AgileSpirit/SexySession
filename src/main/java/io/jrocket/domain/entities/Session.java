@@ -15,6 +15,14 @@ public class Session implements Persistable<String> {
      */
     public static final int SESSION_DURATION = 30;
 
+    /**
+     * The delay (in minutes) from which the session timestamp is updated ; before this limit, if the session is
+     * required, its timestamp is no refreshed, in order to minimize the writing DB requests.
+     *
+     * Notice : <code>SESSION_UPDATE_DELAY</code> must be less than <code>SESSION_DURATION</code>
+     */
+    public static final int SESSION_UPDATE_DELAY = 10;
+
     @Id
     private String token;
 

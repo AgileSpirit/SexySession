@@ -14,7 +14,6 @@ public class UserServiceImpl implements UserService {
 
     @Inject
     UserRepository userRepository;
-
     @Inject
     SessionRepository sessionRepository;
 

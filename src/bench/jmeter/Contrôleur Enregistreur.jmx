@@ -17,8 +17,8 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">300</stringProp>
+        <stringProp name="ThreadGroup.num_threads">380</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">10</stringProp>
         <longProp name="ThreadGroup.start_time">1395333246000</longProp>
         <longProp name="ThreadGroup.end_time">1395333246000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -28,22 +28,8 @@
       <hashTree>
         <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="Gestionnaire de cookies HTTP" enabled="true">
           <collectionProp name="CookieManager.cookies"/>
-          <boolProp name="CookieManager.clearEachIteration">false</boolProp>
+          <boolProp name="CookieManager.clearEachIteration">true</boolProp>
         </CookieManager>
-        <hashTree/>
-        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Paramètres HTTP par défaut" enabled="true">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">jmeter.apache.org</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path"></stringProp>
-          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
-        </ConfigTestElement>
         <hashTree/>
         <RecordingController guiclass="RecordController" testclass="RecordingController" testname="Contrôleur Enregistreur" enabled="true"/>
         <hashTree>
@@ -160,6 +146,12 @@
             </HeaderManager>
             <hashTree/>
           </hashTree>
+          <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Pause de 1s" enabled="true">
+            <intProp name="ActionProcessor.action">1</intProp>
+            <intProp name="ActionProcessor.target">0</intProp>
+            <stringProp name="ActionProcessor.duration">1000</stringProp>
+          </TestAction>
+          <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="/SmartSession/logout" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>

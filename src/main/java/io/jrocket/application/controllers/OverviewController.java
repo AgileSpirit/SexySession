@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 public class OverviewController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OverviewController.class);
+
     @Inject
     SessionService sessionService;
 
