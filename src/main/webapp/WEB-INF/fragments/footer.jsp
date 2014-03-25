@@ -1,3 +1,5 @@
+<%@ page session="false" %>
+
 </div><!-- End body -->
 
 <div id="footer">
