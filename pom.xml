@@ -43,6 +43,7 @@
         <httpclient.version>4.2.6</httpclient.version>
         <commons-beanutils.version>20030211.134440</commons-beanutils.version>
         <aspectj.version>1.7.3</aspectj.version>
+        <ehcache.version>2.8.1</ehcache.version>
 
         <!-- Plugins version -->
         <maven-clean-plugin.version>2.5</maven-clean-plugin.version>

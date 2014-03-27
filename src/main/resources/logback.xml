@@ -8,7 +8,7 @@
 <!-- http://www.qos.ch/shop/products/professionalSupport -->
 <!-- -->
 
-<configuration scan="true">
+<configuration>
 
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <Target>System.out</Target>
@@ -18,16 +18,12 @@
     </appender>
 
     <appender name="file" class="ch.qos.logback.core.FileAppender">
-        <file>${catalina.base}/logs/JavaWebStack.log</file>
+        <file>${catalina.base}/logs/SmartSession.log</file>
         <append>true</append>
         <encoder>
             <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
         </encoder>
     </appender>
-
-    <logger name="org.springframework" level="WARN"/>
-    <logger name="org.hibernate" level="WARN"/>
-    <logger name="org.dbunit" level="WARN"/>
 
     <root level="INFO">
         <appender-ref ref="stdout"/>

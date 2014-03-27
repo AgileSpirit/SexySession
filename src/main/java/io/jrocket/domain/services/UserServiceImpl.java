@@ -35,6 +35,9 @@ public class UserServiceImpl implements UserService {
 
             // Instance a new session
             session = Session.newSession(token, user.getId());
+            session.set("login", user.getLogin());
+            if (user.getFirstName() != null) session.set("firstName", user.getFirstName());
+            if (user.getLastName() != null) session.set("lastName", user.getLastName());
 
             // Persist the session
             session = sessionRepository.save(session);

@@ -2,9 +2,12 @@ package io.jrocket.application.controllers;
 
 import java.util.Map;
 import io.jrocket.application.model.LoginForm;
-import io.jrocket.domain.services.SessionService;
+import io.jrocket.domain.entities.CookieConstants;
+import io.jrocket.domain.entities.User;
 import io.jrocket.domain.services.UserService;
+import io.jrocket.infra.repository.UserRepository;
 import io.jrocket.infra.util.ApplicationException;
+import io.jrocket.infra.util.Features;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -23,6 +26,9 @@ public class LoginController {
     @Inject
     UserService userService;
 
+    @Inject
+    UserRepository userRepository;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
 
     @RequestMapping(value= "/login", method = RequestMethod.GET)
@@ -39,7 +45,13 @@ public class LoginController {
 
         try {
             String sessionToken = userService.signIn(login, password);
-            response.addCookie(new Cookie("SMART_SESSION_ID", sessionToken));
+            response.addCookie(new Cookie(CookieConstants.SMART_SESSION_ID, sessionToken));
+
+            if (Features.IS_ENABLED_DATA_IN_SESSION) {
+                User user = userRepository.findByLogin(login);
+                if (user.getFirstName() != null) response.addCookie(new Cookie(CookieConstants.USER_FIRST_NAME, user.getFirstName()));
+                if (user.getLastName() != null) response.addCookie(new Cookie(CookieConstants.USER_LAST_NAME, user.getLastName()));
+            }
 
         } catch (ApplicationException e) {
             LOGGER.error(e.getMessage());
@@ -54,13 +66,11 @@ public class LoginController {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("SMART_SESSION_ID")) {
+                if (cookie.getName().equals(CookieConstants.SMART_SESSION_ID)) {
                     String sessionToken = cookie.getValue();
                     try {
                         userService.signOut(sessionToken);
-                        Cookie eraser = new Cookie("SMART_SESSION_ID", null);
-                        eraser.setMaxAge(0);
-                        response.addCookie(eraser);
+                        removeCookies(response);
                     } catch (ApplicationException e) {
                         LOGGER.error(e.getMessage());
                         return "redirect:/error";
@@ -70,6 +80,18 @@ public class LoginController {
             }
         }
         return "redirect:/error";
+    }
+
+    private void removeCookies(HttpServletResponse response) {
+        removeCookie(response, CookieConstants.SMART_SESSION_ID);
+        removeCookie(response, CookieConstants.USER_FIRST_NAME);
+        removeCookie(response, CookieConstants.USER_LAST_NAME);
+    }
+
+    private void removeCookie(HttpServletResponse response, String cookieName) {
+        Cookie cookie = new Cookie(cookieName, null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 
 }

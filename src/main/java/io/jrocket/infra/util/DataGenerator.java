@@ -34,7 +34,7 @@ public class DataGenerator {
 
     }
 
-    private final static int MAX_USERS = 10000;
+    private final static int MAX_USERS = 1000;
 
     /**
      * Generate and persist some users.
@@ -43,7 +43,7 @@ public class DataGenerator {
         logger.info("Generating users ...");
         List<User> users = Lists.newArrayList();
 
-        users.add(newUser("admin", "admin"));
+        users.add(newUser("John", "Doe", "admin", "admin"));
         users.add(newUser("test", "test"));
 
         // Add MAX_USERS (login = "userX", password = "toto")
@@ -87,6 +87,13 @@ public class DataGenerator {
         User user = new User();
         user.setLogin(login);
         user.setPassword(password);
+        return user;
+    }
+
+    private User newUser(String firstName, String lastName, String login, String password) {
+        User user = newUser(login, password);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
         return user;
     }
 

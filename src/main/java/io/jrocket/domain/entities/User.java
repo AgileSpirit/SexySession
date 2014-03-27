@@ -10,11 +10,31 @@ import javax.persistence.Table;
 @Table(name = "T_USER")
 public class User extends AbstractPersistable<Long> {
 
+    private String firstName;
+
+    private String lastName;
+
     @Column(nullable = false, unique = true)
     private String login;
 
     @Column(nullable = false)
     private String password;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
     public String getLogin() {
         return login;

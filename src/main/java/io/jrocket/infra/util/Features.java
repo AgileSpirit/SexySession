@@ -8,4 +8,6 @@ public class Features {
 
     public static boolean IS_ENABLED_HIBERNATE_C3P0_POOLING = true;
 
+    public static boolean IS_ENABLED_DATA_IN_SESSION = true;
+
 }

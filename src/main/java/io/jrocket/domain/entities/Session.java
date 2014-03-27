@@ -1,10 +1,14 @@
 package io.jrocket.domain.entities;
 
+import io.jrocket.infra.util.ApplicationException;
+import io.jrocket.infra.util.JsonUtils;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
+
+import static io.jrocket.infra.util.JsonUtils.JsonProperty;
 
 @Entity
 @Table(name = "T_SESSION")
@@ -32,6 +36,9 @@ public class Session implements Persistable<String> {
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
+
+    @Column(nullable = true)
+    private String data;
 
     public static Session newSession(String token, Long userId) {
         Session session = new Session();
@@ -74,6 +81,19 @@ public class Session implements Persistable<String> {
         this.timestamp = timestamp;
     }
 
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public void set(String key, String value) throws ApplicationException {
+        JsonProperty jsonProperty = new JsonProperty(key, value);
+        this.data = JsonUtils.set(this.data, jsonProperty);
+    }
+
     @Override
     public String getId() {
         return token;
@@ -83,6 +103,5 @@ public class Session implements Persistable<String> {
     public boolean isNew() {
         return null == getId();
     }
-
 
 }

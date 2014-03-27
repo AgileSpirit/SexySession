@@ -1,5 +1,6 @@
 package io.jrocket.application.controllers;
 
+import io.jrocket.domain.entities.CookieConstants;
 import io.jrocket.domain.entities.Session;
 import io.jrocket.domain.services.SessionService;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public class OverviewController {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("SMART_SESSION_ID")) {
+                if (cookie.getName().equals(CookieConstants.SMART_SESSION_ID)) {
                     String sessionToken = cookie.getValue();
                     Session session = sessionService.getSession(sessionToken);
                     if (session != null) {

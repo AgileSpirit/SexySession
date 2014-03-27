@@ -1,12 +1,17 @@
 package io.jrocket.infra.config;
 
 import io.jrocket.infra.util.Features;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
@@ -32,6 +37,10 @@ import static io.jrocket.infra.util.PropertyHelper.setProperty;
 @EnableJpaRepositories("io.jrocket.infra.repository")
 public class ApplicationConfig {
 
+    /*
+     * Properties
+     */
+
     @Inject
     Environment env;
 
@@ -39,6 +48,10 @@ public class ApplicationConfig {
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
+
+    /*
+     * Data persistence
+     */
 
     @Bean
     public DataSource dataSource() {
