@@ -2,6 +2,7 @@ package io.jrocket.application.controllers;
 
 import io.jrocket.domain.entities.Session;
 import io.jrocket.domain.services.SessionService;
+import io.jrocket.infra.util.CookieHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -22,17 +23,12 @@ public class OverviewController {
 
     @RequestMapping(value = "/overview", method = RequestMethod.GET)
     public String displayOverviewPage(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("SMART_SESSION_ID")) {
-                    String sessionToken = cookie.getValue();
-                    Session session = sessionService.getSession(sessionToken);
-                    if (session != null) {
-                        LOGGER.info("Session asked : " + sessionToken);
-                        return "overview";
-                    }
-                }
+        Cookie cookie = CookieHelper.get(request, Session.SMART_SESSION_ID);
+        if (cookie != null) {
+            String sessionToken = cookie.getValue();
+            Session session = sessionService.getSession(sessionToken);
+            if (session != null) {
+                return "overview";
             }
         }
         return "redirect:/error";

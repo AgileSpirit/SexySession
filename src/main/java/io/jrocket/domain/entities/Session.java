@@ -11,6 +11,11 @@ import java.util.UUID;
 public class Session implements Persistable<String> {
 
     /**
+     * The name of the cookie that stores the session ID.
+     */
+    public static final String SMART_SESSION_ID = "SMART_SESSION_ID";
+
+    /**
      * The maximum time-to-live of a Session (in minutes).
      */
     public static final int SESSION_DURATION = 30;

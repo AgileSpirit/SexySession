@@ -8,6 +8,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -39,6 +43,10 @@ public class ApplicationConfig {
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
+
+    /*
+     * Data persistence
+     */
 
     @Bean
     public DataSource dataSource() {
@@ -103,6 +111,24 @@ public class ApplicationConfig {
     @Bean
     public HibernateExceptionTranslator hibernateExceptionTranslator() {
         return new HibernateExceptionTranslator();
+    }
+
+    /*
+     * Redis cache
+     */
+
+    @Bean
+    public JedisConnectionFactory jedisConnectionFactory() {
+        JedisConnectionFactory factory = new JedisConnectionFactory();
+        factory.setUsePool(true);
+        return factory;
+    }
+
+    @Bean
+    public StringRedisTemplate stringRedisTemplate() {
+        StringRedisTemplate template = new StringRedisTemplate();
+        template.setConnectionFactory(jedisConnectionFactory());
+        return template;
     }
 
 }
